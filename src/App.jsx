@@ -9,6 +9,7 @@ import LessonScreen from './components/LessonScreen';
 import LevelPlayer from './components/LevelPlayer';
 import { getLessonForLevel } from './data/lessons';
 import BossVictoryOverlay from './components/BossVictoryOverlay';
+import OfflineBanner from './components/OfflineBanner';
 import { getModule, getLevel } from './data/curriculum';
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
 
   return (
     <div className="min-h-dvh">
+      <OfflineBanner />
       <Navbar
         tengeWallet={game.tengeWallet}
         globalPoints={game.globalPoints}
