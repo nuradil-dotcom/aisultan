@@ -1,26 +1,6 @@
 import { useState, useCallback } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-
-function hasRepeatInLine(cells) {
-  const filled = cells.filter(Boolean);
-  return filled.length !== new Set(filled).size;
-}
-
-function checkGrid(grid) {
-  const size = grid.length;
-  for (let r = 0; r < size; r++) {
-    if (hasRepeatInLine(grid[r])) return false;
-  }
-  for (let c = 0; c < size; c++) {
-    const col = grid.map((row) => row[c]);
-    if (hasRepeatInLine(col)) return false;
-  }
-  return true;
-}
-
-function gridsEqual(a, b) {
-  return a.every((row, r) => row.every((cell, c) => cell === b[r][c]));
-}
+import { checkPartialGrid, isValidSolution, cellHasConflict } from '../../utils/sudoku';
 
 export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
   const [grid, setGrid] = useState(() =>
@@ -42,34 +22,10 @@ export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
     setTimeout(onProblemComplete, 500);
   };
 
-  const updateCell = (r, c, emoji) => {
-    if (isFixed(r, c) || solved) return;
-    const next = grid.map((row) => [...row]);
-    next[r][c] = emoji;
-    setGrid(next);
-    setWrongFull(false);
-
-    if (!checkGrid(next)) {
-      setErrors(new Set([`${r},${c}`]));
-      onStruggle?.();
-    } else {
-      setErrors(new Set());
-      const isFull = next.every((row) => row.every(Boolean));
-      if (isFull) {
-        if (gridsEqual(next, problem.solution)) {
-          handleSolved();
-        } else {
-          setWrongFull(true);
-          onStruggle?.();
-        }
-      }
-    }
-  };
-
-  const checkSolution = () => {
-    const isFull = grid.every((row) => row.every(Boolean));
+  const tryComplete = (next) => {
+    const isFull = next.every((row) => row.every(Boolean));
     if (!isFull) return;
-    if (gridsEqual(grid, problem.solution)) {
+    if (isValidSolution(next, problem.initial, problem.emojis)) {
       handleSolved();
     } else {
       setWrongFull(true);
@@ -77,13 +33,36 @@ export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
     }
   };
 
+  const updateCell = (r, c, emoji) => {
+    if (isFixed(r, c) || solved) return;
+    const next = grid.map((row) => [...row]);
+    next[r][c] = emoji;
+    setGrid(next);
+    setWrongFull(false);
+
+    if (!checkPartialGrid(next)) {
+      setErrors(new Set([`${r},${c}`]));
+      onStruggle?.();
+    } else {
+      setErrors(new Set());
+      tryComplete(next);
+    }
+  };
+
+  const checkSolution = () => {
+    const isFull = grid.every((row) => row.every(Boolean));
+    if (!isFull) return;
+    if (!checkPartialGrid(grid)) {
+      setWrongFull(true);
+      onStruggle?.();
+      return;
+    }
+    tryComplete(grid);
+  };
+
   const getCellError = (r, c) => {
     if (errors.has(`${r},${c}`)) return true;
-    const row = grid[r];
-    const col = grid.map((row) => row[c]);
-    if (grid[r][c] && hasRepeatInLine(row)) return true;
-    if (grid[r][c] && hasRepeatInLine(col)) return true;
-    return false;
+    return cellHasConflict(grid, r, c);
   };
 
   const isFull = grid.every((row) => row.every(Boolean));
@@ -100,7 +79,7 @@ export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
       {wrongFull && !solved && (
         <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-3 text-center animate-fade-in">
           <p className="text-red-600 font-extrabold">Қате шешім!</p>
-          <p className="text-red-500 text-sm font-semibold mt-1">Жол мен бағанды қайта тексер</p>
+          <p className="text-red-500 text-sm font-semibold mt-1">Жол, баған және 2×2 шаршыны қайта тексер</p>
         </div>
       )}
 

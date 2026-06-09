@@ -1,4 +1,5 @@
 import { shuffleArray } from '../data/curriculum';
+import { isValidSolution } from './sudoku';
 
 const BASE = [
   ['a', 'b', 'c', 'd'],
@@ -32,6 +33,8 @@ export function generateSudoku(emojis, difficulty, seen = new Set()) {
     const initial = solution.map((row, r) =>
       row.map((cell, c) => (keepSet.has(`${r},${c}`) ? cell : null))
     );
+
+    if (!isValidSolution(solution, initial, emojis)) continue;
 
     const key = gridKey(initial);
     if (!seen.has(key)) {
