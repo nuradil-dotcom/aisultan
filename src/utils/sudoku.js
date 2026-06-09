@@ -62,13 +62,19 @@ export function isValidSolution(grid, initial, emojis) {
 }
 
 export function cellHasConflict(grid, r, c) {
-  if (!grid[r][c]) return false;
-  const row = grid[r];
+  const val = grid[r][c];
+  if (!val) return false;
+
+  const countMatch = (cells) => cells.filter((cell) => cell === val).length;
+
+  if (countMatch(grid[r]) > 1) return true;
+
   const col = grid.map((row) => row[c]);
-  if (hasRepeatInLine(row)) return true;
-  if (hasRepeatInLine(col)) return true;
+  if (countMatch(col) > 1) return true;
+
   const br = Math.floor(r / 2) * 2;
   const bc = Math.floor(c / 2) * 2;
-  if (hasRepeatInLine(getBoxCells(grid, br, bc))) return true;
+  if (countMatch(getBoxCells(grid, br, bc)) > 1) return true;
+
   return false;
 }

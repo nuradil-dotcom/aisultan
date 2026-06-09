@@ -84,7 +84,7 @@ export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
       )}
 
       <div className="flex justify-center">
-        <div className={`grid grid-cols-4 gap-1 p-2 rounded-xl transition-all ${
+        <div className={`inline-grid grid-cols-4 gap-0.5 p-2 rounded-xl transition-all ${
           solved ? 'bg-green-300 ring-4 ring-green-400' : 'bg-violet-300'
         }`}>
           {grid.map((row, r) =>
@@ -94,7 +94,11 @@ export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
                 onClick={() => setSelected({ r, c })}
                 disabled={isFixed(r, c) || solved}
                 className={`
-                  w-[4.5rem] h-[4.5rem] text-2xl rounded-lg flex items-center justify-center transition-all active:scale-95
+                  w-[4.5rem] h-[4.5rem] text-2xl rounded-md flex items-center justify-center transition-all active:scale-95
+                  ${c === 1 ? 'ml-1' : ''}
+                  ${r === 1 ? 'mt-1' : ''}
+                  ${c === 3 ? 'mr-1' : ''}
+                  ${r === 3 ? 'mb-1' : ''}
                   ${isFixed(r, c) ? 'bg-violet-100 font-bold' : solved ? 'bg-green-50 font-bold' : 'bg-white active:bg-violet-50'}
                   ${getCellError(r, c) ? 'ring-2 ring-red-500 bg-red-50' : ''}
                   ${selected?.r === r && selected?.c === c && !solved ? 'ring-2 ring-violet-500' : ''}
@@ -106,6 +110,12 @@ export default function SudokuGame({ problem, onProblemComplete, onStruggle }) {
           )}
         </div>
       </div>
+
+      {!solved && (
+        <p className="text-center text-xs text-violet-600 font-semibold px-2">
+          4×4 судоку: әр жол, әр баған және әр 2×2 шаршыда 🍎🍌🍇🍊 бір рет. Диагональ тексерілмейді.
+        </p>
+      )}
 
       {selected && !isFixed(selected.r, selected.c) && !solved && (
         <div className="flex justify-center gap-2 flex-wrap">
