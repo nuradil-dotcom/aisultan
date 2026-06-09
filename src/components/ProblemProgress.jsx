@@ -7,7 +7,7 @@ export default function ProblemProgress({
   difficulty,
   tengePerProblem,
 }) {
-  const pct = totalProblems > 0 ? ((problemIndex) / totalProblems) * 100 : 0;
+  const pct = totalProblems > 0 ? (problemIndex / totalProblems) * 100 : 0;
 
   return (
     <div className="mb-4 space-y-2">

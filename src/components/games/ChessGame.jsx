@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import { BOARD_SIZE, getValidMoves } from '../../utils/chess';
 
 const COL_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -33,7 +34,7 @@ export default function ChessGame({ problem, onProblemComplete, onStruggle }) {
 
     if (key === targetKey && newCount >= minMoves) {
       setCompleted(true);
-      onProblemComplete();
+      setTimeout(onProblemComplete, 500);
     } else if (key === targetKey && newCount < minMoves) {
       setTooEarly(true);
       onStruggle?.();
@@ -47,6 +48,12 @@ export default function ChessGame({ problem, onProblemComplete, onStruggle }) {
 
   return (
     <div className="space-y-6">
+      {completed && (
+        <div className="flex items-center justify-center gap-2 bg-green-100 border-2 border-green-400 rounded-2xl p-3 animate-fade-in">
+          <CheckCircle2 className="text-green-600" size={28} />
+          <p className="text-green-700 font-extrabold text-lg">Дұрыс! Мақсатқа жеттің!</p>
+        </div>
+      )}
       <p className="text-center text-gray-600">
         {isKing
           ? `${problem.pieceLabel} (${problem.pieceSymbol}) — ⚠️ қауіпсіз 🎯 жерге жет!`

@@ -1,15 +1,18 @@
 import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function PatternGame({ problem, onProblemComplete, onProblemGiveUp, onStruggle }) {
   const [selected, setSelected] = useState(null);
   const [wrong, setWrong] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [correct, setCorrect] = useState(false);
 
   const handleChoice = (choice) => {
     if (attempts >= 2) return;
     setSelected(choice);
     if (choice === problem.answer) {
-      setTimeout(onProblemComplete, 400);
+      setCorrect(true);
+      setTimeout(onProblemComplete, 500);
     } else {
       const next = attempts + 1;
       setAttempts(next);
@@ -25,6 +28,12 @@ export default function PatternGame({ problem, onProblemComplete, onProblemGiveU
 
   return (
     <div className="space-y-6">
+      {correct && (
+        <div className="flex items-center justify-center gap-2 bg-green-100 border-2 border-green-400 rounded-2xl p-3 animate-fade-in">
+          <CheckCircle2 className="text-green-600" size={28} />
+          <p className="text-green-700 font-extrabold text-lg">Дұрыс!</p>
+        </div>
+      )}
       <div className="flex justify-center items-center gap-2 flex-wrap text-2xl bg-white rounded-2xl p-4 shadow-inner">
         {problem.sequence.map((item, i) => (
           <span key={i} className="font-bold">{item}</span>

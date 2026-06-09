@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 function MiniGrid({ cells, size = 'md' }) {
   const cls = size === 'sm' ? 'w-9 h-9 text-sm' : 'w-10 h-10 text-base';
@@ -17,12 +18,14 @@ export default function SpatialGame({ problem, onProblemComplete, onProblemGiveU
   const [selected, setSelected] = useState(null);
   const [wrong, setWrong] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [correct, setCorrect] = useState(false);
 
   const handlePick = (idx) => {
     if (attempts >= 2) return;
     setSelected(idx);
     if (idx === problem.answer) {
-      setTimeout(onProblemComplete, 400);
+      setCorrect(true);
+      setTimeout(onProblemComplete, 500);
     } else {
       const next = attempts + 1;
       setAttempts(next);
@@ -40,6 +43,12 @@ export default function SpatialGame({ problem, onProblemComplete, onProblemGiveU
 
   return (
     <div className="space-y-6">
+      {correct && (
+        <div className="flex items-center justify-center gap-2 bg-green-100 border-2 border-green-400 rounded-2xl p-3 animate-fade-in">
+          <CheckCircle2 className="text-green-600" size={28} />
+          <p className="text-green-700 font-extrabold text-lg">Дұрыс!</p>
+        </div>
+      )}
       <p className="text-center font-bold text-violet-800">{problem.prompt}</p>
 
       <div className="flex justify-center">

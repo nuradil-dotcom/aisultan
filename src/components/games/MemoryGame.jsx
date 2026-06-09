@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function MemoryGame({ problem, onProblemComplete, onProblemGiveUp, onStruggle }) {
   const [phase, setPhase] = useState('show');
   const [selected, setSelected] = useState(null);
   const [wrong, setWrong] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [correct, setCorrect] = useState(false);
 
   useEffect(() => {
     setPhase('show');
     setSelected(null);
     setWrong(false);
     setAttempts(0);
+    setCorrect(false);
     const t = setTimeout(() => setPhase('answer'), problem.displayMs || 2500);
     return () => clearTimeout(t);
   }, [problem]);
@@ -19,7 +22,8 @@ export default function MemoryGame({ problem, onProblemComplete, onProblemGiveUp
     if (phase !== 'answer' || attempts >= 2) return;
     setSelected(choice);
     if (choice === problem.answer) {
-      setTimeout(onProblemComplete, 400);
+      setCorrect(true);
+      setTimeout(onProblemComplete, 500);
     } else {
       const next = attempts + 1;
       setAttempts(next);
@@ -41,6 +45,12 @@ export default function MemoryGame({ problem, onProblemComplete, onProblemGiveUp
 
   return (
     <div className="space-y-6">
+      {correct && (
+        <div className="flex items-center justify-center gap-2 bg-green-100 border-2 border-green-400 rounded-2xl p-3 animate-fade-in">
+          <CheckCircle2 className="text-green-600" size={28} />
+          <p className="text-green-700 font-extrabold text-lg">Дұрыс!</p>
+        </div>
+      )}
       <p className="text-center text-sm font-bold text-violet-700">
         {phase === 'show' ? '👀 Жақсы қарап ал!' : problem.kind === 'missing' ? '❓ орнына не болды?' : 'Келесі не?'}
       </p>

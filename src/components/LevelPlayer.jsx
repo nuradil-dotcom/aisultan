@@ -9,6 +9,8 @@ import MascotHelper from './MascotHelper';
 import ProblemProgress from './ProblemProgress';
 import BossQuest from './BossQuest';
 import RewardCeremony from './RewardCeremony';
+import ProblemSuccessOverlay from './ProblemSuccessOverlay';
+import { useProblemComplete } from '../hooks/useProblemComplete';
 import SudokuGame from './games/SudokuGame';
 import ChessGame from './games/ChessGame';
 import PatternGame from './games/PatternGame';
@@ -58,8 +60,6 @@ export default function LevelPlayer({
   const [sessionPoints, setSessionPoints] = useState(0);
   const [hintUsed, setHintUsed] = useState(false);
   const [activeHint, setActiveHint] = useState(null);
-  const [earnFlash, setEarnFlash] = useState(null);
-
   const mod = getModule(moduleId);
   const baseLevel = getLevel(moduleId, levelId);
   const expanded = useMemo(() => baseLevel ? expandLevel(baseLevel) : null, [baseLevel]);
@@ -111,7 +111,7 @@ export default function LevelPlayer({
     }
   }, [problemIndex, totalProblems, finishLevel, goToNextProblem]);
 
-  const handleProblemComplete = useCallback(() => {
+  const advanceAfterSuccess = useCallback(() => {
     if (!rewards || alreadyDone) {
       if (problemIndex + 1 >= totalProblems) onBack();
       else goToNextProblem();
@@ -123,8 +123,6 @@ export default function LevelPlayer({
     onEarnProblem(t, p);
     setSessionTenge((s) => s + t);
     setSessionPoints((s) => s + p);
-    setEarnFlash(`+${t} ₸`);
-    setTimeout(() => setEarnFlash(null), 1200);
 
     if (problemIndex + 1 >= totalProblems) {
       const learning = getLevelLearning(expanded);
@@ -139,11 +137,16 @@ export default function LevelPlayer({
         perProblemTenge: rewards.tengePerProblem,
       });
     } else {
-      setProblemIndex((i) => i + 1);
-      setHintUsed(false);
-      setActiveHint(null);
+      goToNextProblem();
     }
   }, [rewards, alreadyDone, problemIndex, totalProblems, onEarnProblem, onComplete, moduleId, levelId, expanded, sessionTenge, sessionPoints, goToNextProblem, onBack]);
+
+  const { celebration, celebrateAndAdvance, finishCelebration } = useProblemComplete(advanceAfterSuccess);
+
+  const handleProblemComplete = useCallback(() => {
+    const t = rewards && !alreadyDone ? rewards.tengePerProblem : 0;
+    celebrateAndAdvance(t);
+  }, [rewards, alreadyDone, celebrateAndAdvance]);
 
   const handleBossComplete = () => {
     if (!alreadyDone) {
@@ -175,10 +178,8 @@ export default function LevelPlayer({
 
   return (
     <div className="max-w-lg mx-auto px-3 py-3 pb-safe-fab relative">
-      {earnFlash && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-full font-extrabold text-lg shadow-xl animate-bounce-once">
-          {earnFlash}
-        </div>
+      {celebration && (
+        <ProblemSuccessOverlay tenge={celebration.tenge} onDone={finishCelebration} />
       )}
 
       <button onClick={onBack} className="touch-target flex items-center gap-2 text-violet-600 font-bold mb-3 -ml-1 px-1 active:opacity-70">

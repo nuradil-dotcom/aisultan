@@ -11,11 +11,12 @@ import MathGame from './games/MathGame';
 import MemoryGame from './games/MemoryGame';
 import SpatialGame from './games/SpatialGame';
 import ReasoningGame from './games/ReasoningGame';
+import ProblemSuccessOverlay from './ProblemSuccessOverlay';
 
 function BossQuestion({ question, onDone }) {
   const expanded = expandLevel(question);
   const problem = expanded.problems?.[0] || levelToProblem(question);
-  const props = { problem, onProblemComplete: onDone };
+  const props = { problem, onProblemComplete: onDone, onProblemGiveUp: () => {} };
 
   switch (question.type) {
     case 'sudoku':
@@ -48,8 +49,14 @@ function BossQuestion({ question, onDone }) {
 export default function BossQuest({ moduleId, bossLevel, onComplete }) {
   const questions = useMemo(() => pickBossQuestions(moduleId, 7), [moduleId]);
   const [current, setCurrent] = useState(0);
+  const [celebrating, setCelebrating] = useState(false);
 
   const handleQuestionDone = () => {
+    setCelebrating(true);
+  };
+
+  const finishCelebration = () => {
+    setCelebrating(false);
     if (current + 1 >= questions.length) {
       onComplete();
     } else {
@@ -58,7 +65,10 @@ export default function BossQuest({ moduleId, bossLevel, onComplete }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {celebrating && (
+        <ProblemSuccessOverlay tenge={0} onDone={finishCelebration} />
+      )}
       <div className="text-center bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-6 text-white shadow-lg">
         <Crown size={40} className="mx-auto mb-2" />
         <h2 className="text-2xl font-extrabold">{bossLevel.bossTitle}</h2>

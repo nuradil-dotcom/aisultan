@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Play, Trash2 } from 'lucide-react';
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Play, Trash2, CheckCircle2 } from 'lucide-react';
 import { simulateMaze } from '../../utils/maze';
 
 const ARROWS = [
@@ -37,6 +37,12 @@ export default function MazeGame({ problem, onProblemComplete, onStruggle }) {
 
   return (
     <div className="space-y-6">
+      {result === 'success' && (
+        <div className="flex items-center justify-center gap-2 bg-green-100 border-2 border-green-400 rounded-2xl p-3 animate-fade-in">
+          <CheckCircle2 className="text-green-600" size={28} />
+          <p className="text-green-700 font-extrabold text-lg">Дұрыс! Финишке жеттің!</p>
+        </div>
+      )}
       <div className="flex justify-center">
         <div className="inline-grid gap-0.5 bg-sky-200 p-2 rounded-xl">
           {problem.grid.map((row, r) =>

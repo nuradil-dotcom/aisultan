@@ -1,15 +1,18 @@
 import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function ReasoningGame({ problem, onProblemComplete, onProblemGiveUp, onStruggle }) {
   const [selected, setSelected] = useState(null);
   const [wrong, setWrong] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [correct, setCorrect] = useState(false);
 
   const handleChoice = (choice) => {
     if (attempts >= 2) return;
     setSelected(choice);
     if (choice === problem.answer) {
-      setTimeout(onProblemComplete, 400);
+      setCorrect(true);
+      setTimeout(onProblemComplete, 500);
     } else {
       const next = attempts + 1;
       setAttempts(next);
@@ -25,9 +28,17 @@ export default function ReasoningGame({ problem, onProblemComplete, onProblemGiv
 
   const locked = attempts >= 2;
 
+  const successBanner = correct && (
+    <div className="flex items-center justify-center gap-2 bg-green-100 border-2 border-green-400 rounded-2xl p-3 animate-fade-in">
+      <CheckCircle2 className="text-green-600" size={28} />
+      <p className="text-green-700 font-extrabold text-lg">Дұрыс!</p>
+    </div>
+  );
+
   if (problem.kind === 'deduce') {
     return (
       <div className="space-y-5">
+        {successBanner}
         <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
           <p className="text-gray-800 leading-relaxed font-medium text-lg">{problem.story}</p>
         </div>
@@ -57,6 +68,7 @@ export default function ReasoningGame({ problem, onProblemComplete, onProblemGiv
 
   return (
     <div className="space-y-5">
+      {successBanner}
       <p className="text-center font-bold text-violet-800">Артықсызын тап!</p>
       <div className="flex justify-center gap-4 text-4xl flex-wrap">
         {problem.items.map((item, i) => (
