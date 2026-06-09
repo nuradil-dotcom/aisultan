@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { BOSS_REWARD } from '../data/rewards';
 
 const DEV_PATTERN = ['tl', 'tr', 'br', 'bl', 'tl'];
 
@@ -60,7 +61,7 @@ export default function BossVictoryOverlay({ onApprove }) {
           Керемет!
         </h2>
         <p className="text-xl sm:text-2xl font-bold text-white/95 leading-relaxed drop-shadow">
-          Енді Нұраділ ағаңа барып, 1000 ₸ сыйлығыңды ал!
+          Енді Нұраділ ағаңа барып, {BOSS_REWARD.tenge} ₸ сыйлығыңды ал!
         </p>
         <div className="mt-8 text-6xl">🎉🏆💰</div>
       </div>

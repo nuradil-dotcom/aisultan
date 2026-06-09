@@ -6,7 +6,6 @@ export default function MascotHelper({
   hintText,
   hintUsed,
   onBuyHint,
-  tengeWallet,
   canAfford,
 }) {
   const [open, setOpen] = useState(false);

@@ -56,10 +56,7 @@ export default function App() {
           <HomeHub
             globalPoints={game.globalPoints}
             tengeWallet={game.tengeWallet}
-            totalEarned={game.totalEarned}
             completedCount={game.completedCount}
-            claimedGoals={game.claimedGoals}
-            onClaimGoal={game.claimSavingsGoal}
             onLearn={() => { setScreen('map'); setActiveModule('logic'); }}
             onPlay={() => {
               setScreen('map');

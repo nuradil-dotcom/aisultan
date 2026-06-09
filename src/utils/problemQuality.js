@@ -16,14 +16,10 @@ export function validatePatternProblem(p) {
   if (!p?.sequence?.length || !p.choices?.includes(p.answer)) return false;
   const unitLen = guessUnitLength(p.sequence);
   if (!unitLen) return true;
-  const expected = p.sequence[0];
   for (let i = 0; i < p.sequence.length; i++) {
     const unit = p.sequence.slice(0, unitLen);
     if (p.sequence[i] !== unit[i % unitLen]) return false;
   }
-  const expectedAnswer = p.sequence[0];
-  const cyclicAnswer = p.sequence[(p.sequence.length) % unitLen];
-  // For repeating pattern, answer must continue the cycle
   const correctNext = p.sequence.length > 0
     ? (() => {
         const u = p.sequence.slice(0, unitLen);

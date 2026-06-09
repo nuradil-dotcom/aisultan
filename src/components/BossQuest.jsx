@@ -13,10 +13,10 @@ import SpatialGame from './games/SpatialGame';
 import ReasoningGame from './games/ReasoningGame';
 import ProblemSuccessOverlay from './ProblemSuccessOverlay';
 
-function BossQuestion({ question, onDone }) {
+function BossQuestion({ question, onDone, onSkip }) {
   const expanded = expandLevel(question);
   const problem = expanded.problems?.[0] || levelToProblem(question);
-  const props = { problem, onProblemComplete: onDone, onProblemGiveUp: () => {} };
+  const props = { problem, onProblemComplete: onDone, onProblemGiveUp: onSkip };
 
   switch (question.type) {
     case 'sudoku':
@@ -64,6 +64,14 @@ export default function BossQuest({ moduleId, bossLevel, onComplete }) {
     }
   };
 
+  const skipQuestion = () => {
+    if (current + 1 >= questions.length) {
+      onComplete();
+    } else {
+      setCurrent((c) => c + 1);
+    }
+  };
+
   return (
     <div className="space-y-6 relative">
       {celebrating && (
@@ -101,6 +109,7 @@ export default function BossQuest({ moduleId, bossLevel, onComplete }) {
           key={`${current}-${questions[current].id}`}
           question={questions[current]}
           onDone={handleQuestionDone}
+          onSkip={skipQuestion}
         />
       </div>
     </div>

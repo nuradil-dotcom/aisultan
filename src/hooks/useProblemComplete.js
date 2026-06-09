@@ -1,10 +1,12 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 export function useProblemComplete(onAdvance) {
   const [celebration, setCelebration] = useState(null);
   const advanceRef = useRef(onAdvance);
 
-  advanceRef.current = onAdvance;
+  useEffect(() => {
+    advanceRef.current = onAdvance;
+  }, [onAdvance]);
 
   const celebrateAndAdvance = useCallback((tenge = 0) => {
     setCelebration({ tenge });

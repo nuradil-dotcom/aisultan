@@ -1,5 +1,4 @@
 import { PROBLEM_COUNTS, getLevelRewards } from '../data/rewards';
-import { shuffleArray } from '../data/curriculum';
 import { generateMathProblems } from './mathGenerator';
 import { generateSudokuBatch } from './sudokuGenerator';
 import { generatePatternBatch } from './patternGenerator';

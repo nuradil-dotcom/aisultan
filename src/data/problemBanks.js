@@ -1,4 +1,3 @@
-import { shuffleArray } from './curriculum';
 
 export const SUDOKU_BANK = {
   '🍎🍌🍇🍊': [

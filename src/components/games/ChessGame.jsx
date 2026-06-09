@@ -10,7 +10,7 @@ export default function ChessGame({ problem, onProblemComplete, onStruggle }) {
   const [completed, setCompleted] = useState(false);
   const [tooEarly, setTooEarly] = useState(false);
 
-  const dangerZones = problem.dangerZones || [];
+  const dangerZones = useMemo(() => problem.dangerZones || [], [problem.dangerZones]);
   const isKing = problem.piece === 'king';
 
   const validMoves = useMemo(

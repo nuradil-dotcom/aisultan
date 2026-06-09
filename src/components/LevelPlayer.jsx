@@ -58,6 +58,7 @@ export default function LevelPlayer({
   const [problemIndex, setProblemIndex] = useState(0);
   const [sessionTenge, setSessionTenge] = useState(0);
   const [sessionPoints, setSessionPoints] = useState(0);
+  const [sessionSolved, setSessionSolved] = useState(0);
   const [hintUsed, setHintUsed] = useState(false);
   const [activeHint, setActiveHint] = useState(null);
   const mod = getModule(moduleId);
@@ -72,12 +73,12 @@ export default function LevelPlayer({
   const onStruggle = useCallback(() => {}, []);
 
   const handleBuyHint = useCallback(() => {
-    if (hintUsed || !currentProblem) return;
+    if (alreadyDone || hintUsed || !currentProblem) return;
     if (!onSpendTenge(HINT_COST_PER_PROBLEM)) return;
     const text = getProblemHint(expanded, currentProblem);
     setActiveHint(text);
     setHintUsed(true);
-  }, [hintUsed, currentProblem, expanded, onSpendTenge]);
+  }, [alreadyDone, hintUsed, currentProblem, expanded, onSpendTenge]);
 
   const goToNextProblem = useCallback(() => {
     setProblemIndex((i) => i + 1);
@@ -85,31 +86,13 @@ export default function LevelPlayer({
     setActiveHint(null);
   }, []);
 
-  const finishLevel = useCallback(() => {
-    if (!rewards || alreadyDone) {
-      onBack();
-      return;
-    }
-    const learning = getLevelLearning(expanded);
-    const earned = onComplete(moduleId, levelId, false, rewards.levelBonus);
-    setReward({
-      pointsEarned: sessionPoints + earned.pointsEarned,
-      tengeEarned: sessionTenge + earned.tengeEarned,
-      learnSummary: learning.earned,
-      isBoss: false,
-      problemsSolved: totalProblems,
-      levelBonus: rewards.levelBonus,
-      perProblemTenge: rewards.tengePerProblem,
-    });
-  }, [rewards, alreadyDone, expanded, onComplete, moduleId, levelId, sessionPoints, sessionTenge, onBack]);
-
   const handleProblemGiveUp = useCallback(() => {
     if (problemIndex + 1 >= totalProblems) {
-      finishLevel();
+      onBack();
     } else {
       goToNextProblem();
     }
-  }, [problemIndex, totalProblems, finishLevel, goToNextProblem]);
+  }, [problemIndex, totalProblems, goToNextProblem, onBack]);
 
   const advanceAfterSuccess = useCallback(() => {
     if (!rewards || alreadyDone) {
@@ -123,6 +106,8 @@ export default function LevelPlayer({
     onEarnProblem(t, p);
     setSessionTenge((s) => s + t);
     setSessionPoints((s) => s + p);
+    const solvedCount = sessionSolved + 1;
+    setSessionSolved(solvedCount);
 
     if (problemIndex + 1 >= totalProblems) {
       const learning = getLevelLearning(expanded);
@@ -132,14 +117,14 @@ export default function LevelPlayer({
         tengeEarned: sessionTenge + t + earned.tengeEarned,
         learnSummary: learning.earned,
         isBoss: false,
-        problemsSolved: totalProblems,
+        problemsSolved: solvedCount,
         levelBonus: rewards.levelBonus,
         perProblemTenge: rewards.tengePerProblem,
       });
     } else {
       goToNextProblem();
     }
-  }, [rewards, alreadyDone, problemIndex, totalProblems, onEarnProblem, onComplete, moduleId, levelId, expanded, sessionTenge, sessionPoints, goToNextProblem, onBack]);
+  }, [rewards, alreadyDone, problemIndex, totalProblems, onEarnProblem, onComplete, moduleId, levelId, expanded, sessionTenge, sessionPoints, sessionSolved, goToNextProblem, onBack]);
 
   const { celebration, celebrateAndAdvance, finishCelebration } = useProblemComplete(advanceAfterSuccess);
 
@@ -232,12 +217,11 @@ export default function LevelPlayer({
         )}
       </div>
 
-      {!isBoss && (
+      {!isBoss && !alreadyDone && (
         <MascotHelper
           hintText={activeHint}
           hintUsed={hintUsed}
           onBuyHint={handleBuyHint}
-          tengeWallet={tengeWallet}
           canAfford={!hintUsed && tengeWallet >= HINT_COST_PER_PROBLEM}
         />
       )}

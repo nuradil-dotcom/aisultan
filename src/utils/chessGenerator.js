@@ -1,5 +1,4 @@
 import { BOARD_SIZE, getValidMoves } from './chess';
-import { shuffleArray } from '../data/curriculum';
 
 const PIECES = {
   easy: [

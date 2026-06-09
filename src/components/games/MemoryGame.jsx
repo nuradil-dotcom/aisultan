@@ -9,11 +9,6 @@ export default function MemoryGame({ problem, onProblemComplete, onProblemGiveUp
   const [correct, setCorrect] = useState(false);
 
   useEffect(() => {
-    setPhase('show');
-    setSelected(null);
-    setWrong(false);
-    setAttempts(0);
-    setCorrect(false);
     const t = setTimeout(() => setPhase('answer'), problem.displayMs || 2500);
     return () => clearTimeout(t);
   }, [problem]);
